@@ -48,12 +48,15 @@ Result<String, int> get_password(const StringView& prompt)
     char* password = nullptr;
     size_t n = 0;
 
-    int ret = getline(&password, &n, stdin);
+    auto ret = getline(&password, &n, stdin);
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &original);
     putchar('\n');
     if (ret < 0) {
         return errno;
     }
+
+    // Remove trailing '\n' read by getline().
+    password[ret - 1] = '\0';
 
     String s(password);
     free(password);
